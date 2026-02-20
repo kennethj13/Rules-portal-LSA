@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LSA Competition Manual — Rules Assistant</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
+
+  :root {
+    --ocean: #0a2540;
+    --deep: #061a2e;
+    --sand: #f5efe6;
+    --foam: #e8f4fd;
+    --wave: #1e6fa8;
+    --surf: #2596d4;
+    --sun: #f4a229;
+    --alert: #e8453c;
+    --text: #0a2540;
+    --muted: #6b7fa3;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--ocean);
+    color: var(--sand);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Animated ocean background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 20% 50%, rgba(30, 111, 168, 0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(37, 150, 212, 0.15) 0%, transparent 40%),
+      linear-gradient(180deg, #0a2540 0%, #061a2e 100%);
+    z-index: 0;
+  }
+
+  /* Wave animation at bottom */
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: 0;
+    left: -50%;
+    width: 200%;
+    height: 200px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 200'%3E%3Cpath fill='rgba(30,111,168,0.08)' d='M0,100 C360,180 720,20 1080,100 C1260,140 1380,80 1440,100 L1440,200 L0,200 Z'/%3E%3Cpath fill='rgba(37,150,212,0.05)' d='M0,130 C240,80 480,170 720,130 C960,90 1200,160 1440,130 L1440,200 L0,200 Z'/%3E%3C/svg%3E") repeat-x;
+    animation: wave 12s linear infinite;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  @keyframes wave {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(50%); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* Header */
+  header {
+    padding: 20px 24px 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+
+  .logo {
+    width: 48px;
+    height: 48px;
+    background: var(--sun);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--ocean);
+    flex-shrink: 0;
+    box-shadow: 0 4px 20px rgba(244, 162, 41, 0.3);
+  }
+
+  .header-text h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: white;
+    line-height: 1;
+  }
+
+  .header-text p {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  .edition-badge {
+    margin-left: auto;
+    background: rgba(37, 150, 212, 0.15);
+    border: 1px solid rgba(37, 150, 212, 0.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: var(--surf);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  /* Suggested questions */
+  .suggestions {
+    padding: 16px 24px 0;
+    flex-shrink: 0;
+  }
+
+  .suggestions-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .suggestion-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chip {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: rgba(245, 239, 230, 0.8);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .chip:hover {
+    background: rgba(37, 150, 212, 0.2);
+    border-color: rgba(37, 150, 212, 0.4);
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  /* Chat area */
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
+
+  .chat-area::-webkit-scrollbar { width: 4px; }
+  .chat-area::-webkit-scrollbar-track { background: transparent; }
+  .chat-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+  /* Welcome state */
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    text-align: center;
+    padding: 40px 20px;
+    opacity: 1;
+    transition: opacity 0.3s;
+  }
+
+  .welcome-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 4px 20px rgba(244, 162, 41, 0.3));
+  }
+
+  .welcome h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 3px;
+    color: white;
+    margin-bottom: 8px;
+  }
+
+  .welcome p {
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 400px;
+    line-height: 1.6;
+  }
+
+  /* Messages */
+  .message {
+    display: flex;
+    gap: 12px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .message.user {
+    flex-direction: row-reverse;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  .avatar.bot {
+    background: linear-gradient(135deg, var(--wave), var(--surf));
+    color: white;
+    font-size: 16px;
+  }
+
+  .avatar.user {
+    background: var(--sun);
+    color: var(--ocean);
+    font-weight: 600;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .bubble {
+    max-width: 78%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .message.user .bubble {
+    background: var(--surf);
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+
+  .message.bot .bubble {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--sand);
+    border-bottom-left-radius: 4px;
+    backdrop-filter: blur(10px);
+  }
+
+  .bubble strong {
+    color: var(--sun);
+    font-weight: 600;
+  }
+
+  .bubble em {
+    color: rgba(245, 239, 230, 0.7);
+    font-style: italic;
+  }
+
+  .bubble ul, .bubble ol {
+    padding-left: 20px;
+    margin: 8px 0;
+  }
+
+  .bubble li {
+    margin-bottom: 4px;
+  }
+
+  .bubble p + p {
+    margin-top: 8px;
+  }
+
+  .section-ref {
+    display: inline-block;
+    background: rgba(244, 162, 41, 0.15);
+    border: 1px solid rgba(244, 162, 41, 0.3);
+    color: var(--sun);
+    font-size: 11px;
+    padding: 1px 8px;
+    border-radius: 10px;
+    margin-right: 4px;
+    font-weight: 500;
+  }
+
+  /* Typing indicator */
+  .typing-indicator {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    padding: 14px 16px;
+  }
+
+  .typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--surf);
+    animation: typing 1.2s ease-in-out infinite;
+  }
+
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typing {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  /* Input area */
+  .input-area {
+    padding: 16px 24px 20px;
+    flex-shrink: 0;
+  }
+
+  .input-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 10px 12px 10px 18px;
+    transition: border-color 0.2s;
+    backdrop-filter: blur(10px);
+  }
+
+  .input-wrapper:focus-within {
+    border-color: rgba(37, 150, 212, 0.5);
+    box-shadow: 0 0 0 3px rgba(37, 150, 212, 0.1);
+  }
+
+  textarea {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    resize: none;
+    max-height: 120px;
+    line-height: 1.5;
+    padding: 2px 0;
+    overflow-y: auto;
+  }
+
+  textarea::placeholder {
+    color: var(--muted);
+  }
+
+  textarea::-webkit-scrollbar { display: none; }
+
+  .send-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--surf);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    color: white;
+  }
+
+  .send-btn:hover:not(:disabled) {
+    background: var(--wave);
+    transform: scale(1.05);
+  }
+
+  .send-btn:disabled {
+    background: rgba(255,255,255,0.1);
+    cursor: not-allowed;
+  }
+
+  .send-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 10px;
+    letter-spacing: 0.3px;
+  }
+
+  /* Error state */
+  .error-bubble {
+    background: rgba(232, 69, 60, 0.1) !important;
+    border-color: rgba(232, 69, 60, 0.3) !important;
+    color: #ff9a96 !important;
+  }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.07);
+  }
+
+  .divider span {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo">LSA</div>
+    <div class="header-text">
+      <h1>Rules Assistant</h1>
+      <p>Lifesaving South Africa — Competition Manual</p>
+    </div>
+    <div class="edition-badge">17th Edition · Nov 2022</div>
+  </header>
+
+  <div class="suggestions">
+    <div class="suggestions-label">Quick Questions</div>
+    <div class="suggestion-chips" id="chips">
+      <button class="chip" onclick="askChip(this)">Skull cap rules for managers</button>
+      <button class="chip" onclick="askChip(this)">Nipper age group relay rules</button>
+      <button class="chip" onclick="askChip(this)">Disqualification reasons</button>
+      <button class="chip" onclick="askChip(this)">Handler water depth rules</button>
+      <button class="chip" onclick="askChip(this)">Hi-vis vest requirements</button>
+      <button class="chip" onclick="askChip(this)">Iron nipper event rules</button>
+      <button class="chip" onclick="askChip(this)">Board event regulations</button>
+      <button class="chip" onclick="askChip(this)">Protest procedure</button>
+    </div>
+  </div>
+
+  <div class="chat-area" id="chatArea">
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">🌊</div>
+      <h2>Ask Anything</h2>
+      <p>Ask me any question about the LSA Competition Manual and I'll find the relevant rules for you instantly.</p>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-wrapper">
+      <textarea 
+        id="userInput" 
+        placeholder="Ask about any rule, event, or regulation…"
+        rows="1"
+        onkeydown="handleKey(event)"
+        oninput="autoResize(this)"
+      ></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+    <p class="footer-note">Answers based on the LSA Competition Manual (17th Edition, Nov 2022). Always verify with officials for competition-day rulings.</p>
+  </div>
+</div>
+
+<script>
+// ─── Manual data (embedded) ───────────────────────────────────────────────
+// Data is injected here via Python after build
+let MANUAL_CHUNKS = [];
+let MANUAL_INDEX = [];
+
+// ─── Load manual data ────────────────────────────────────────────────────
+async function loadManualData() {
+  try {
+    const response = await fetch('manual_data.js');
+    if (!response.ok) throw new Error('Could not load manual data');
+    const text = await response.text();
+    eval(text); // sets MANUAL_DATA global
+    MANUAL_CHUNKS = MANUAL_DATA.chunks;
+    MANUAL_INDEX = MANUAL_DATA.index;
+    console.log(`Loaded ${MANUAL_CHUNKS.length} manual chunks`);
+  } catch (e) {
+    console.error('Failed to load manual data:', e);
+  }
+}
+
+// ─── Keyword search ──────────────────────────────────────────────────────
+function findRelevantChunks(query, topN = 5) {
+  const stopwords = new Set(['the','and','for','are','but','not','you','all','can','had','her','was','one','our','out','what','when','how','where','which','that','this','with','from','they','will','have','been','more','also','must','such','than','then','them','well','were','your']);
+  
+  const queryWords = query.toLowerCase()
+    .replace(/[^a-z\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !stopwords.has(w));
+
+  const scores = MANUAL_INDEX.map((keywords, i) => {
+    const kwSet = new Set(keywords);
+    let score = 0;
+    for (const word of queryWords) {
+      // Exact match
+      if (kwSet.has(word)) score += 2;
+      // Partial match
+      for (const kw of kwSet) {
+        if (kw.includes(word) || word.includes(kw)) score += 0.5;
+      }
+    }
+    return { score, index: i };
+  });
+
+  scores.sort((a, b) => b.score - a.score);
+  
+  return scores
+    .slice(0, topN)
+    .filter(s => s.score > 0)
+    .map(s => MANUAL_CHUNKS[s.index]);
+}
+
+// ─── Chat state ──────────────────────────────────────────────────────────
+let conversationHistory = [];
+let isLoading = false;
+
+// ─── UI helpers ──────────────────────────────────────────────────────────
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function askChip(el) {
+  const text = el.textContent;
+  document.getElementById('userInput').value = text;
+  sendMessage();
+}
+
+function hideWelcome() {
+  const welcome = document.getElementById('welcome');
+  if (welcome) {
+    welcome.style.opacity = '0';
+    setTimeout(() => welcome.remove(), 300);
+  }
+}
+
+function appendMessage(role, content) {
+  hideWelcome();
+  
+  const chatArea = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+
+  const avatarDiv = document.createElement('div');
+  avatarDiv.className = `avatar ${role}`;
+  avatarDiv.textContent = role === 'user' ? 'YOU' : '🏖';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  
+  if (role === 'bot') {
+    bubble.innerHTML = formatResponse(content);
+  } else {
+    bubble.textContent = content;
+  }
+
+  div.appendChild(avatarDiv);
+  div.appendChild(bubble);
+  chatArea.appendChild(div);
+  chatArea.scrollTop = chatArea.scrollHeight;
+  
+  return bubble;
+}
+
+function formatResponse(text) {
+  // Convert markdown-like formatting to HTML
+  return text
+    // Bold
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Section references
+    .replace(/Section\s+(\d+[:\.\d]*)/gi, '<span class="section-ref">Section $1</span>')
+    .replace(/\(Section\s+(\d+[:\.\d]*)\)/gi, '(<span class="section-ref">Section $1</span>)')
+    // Numbered lists
+    .replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s, '<ol>$1</ol>')
+    // Bullet lists
+    .replace(/^[-•]\s+(.+)$/gm, '<li>$1</li>')
+    // Line breaks
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>')
+    // Wrap in paragraphs
+    .replace(/^(.+)$/m, '<p>$1</p>');
+}
+
+function showTyping() {
+  const chatArea = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'message bot';
+  div.id = 'typing-msg';
+  
+  const avatarDiv = document.createElement('div');
+  avatarDiv.className = 'avatar bot';
+  avatarDiv.textContent = '🏖';
+  
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+  
+  div.appendChild(avatarDiv);
+  div.appendChild(bubble);
+  chatArea.appendChild(div);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typing-msg');
+  if (el) el.remove();
+}
+
+// ─── Main send function ──────────────────────────────────────────────────
+async function sendMessage() {
+  if (isLoading) return;
+  
+  const input = document.getElementById('userInput');
+  const query = input.value.trim();
+  if (!query) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('sendBtn').disabled = true;
+  isLoading = true;
+
+  // Show user message
+  appendMessage('user', query);
+
+  // Find relevant manual chunks
+  const relevantChunks = findRelevantChunks(query, 5);
+  const context = relevantChunks.length > 0 
+    ? relevantChunks.join('\n\n---\n\n')
+    : 'No specific section found — answer from general knowledge of the manual.';
+
+  // Build system prompt
+  const systemPrompt = `You are an expert assistant for the Lifesaving South Africa (LSA) Competition Manual (17th Edition, November 2022). You help officials, team managers, coaches, and competitors understand the rules.
+
+RELEVANT MANUAL SECTIONS FOR THIS QUERY:
+${context}
+
+Instructions:
+- Answer based on the manual excerpts provided above
+- Be specific and cite section numbers when visible (e.g. "Section 2.8.3" or "Section 4")
+- Use clear, plain language — these are often asked poolside or beachside during competition
+- If a rule has exceptions or conditions, mention them
+- If the information isn't in the provided excerpts, say so honestly and suggest they check with the Chief Referee
+- Keep answers concise but complete
+- Format with **bold** for key rules or key terms`;
+
+  // Add to conversation history
+  conversationHistory.push({ role: 'user', content: query });
+  
+  // Keep history manageable (last 6 messages)
+  const recentHistory = conversationHistory.slice(-6);
+
+  showTyping();
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: recentHistory
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || `API error ${response.status}`);
+    }
+
+    const data = await response.json();
+    const answer = data.content?.[0]?.text || 'Sorry, I could not generate a response.';
+    
+    // Add assistant response to history
+    conversationHistory.push({ role: 'assistant', content: answer });
+
+    removeTyping();
+    appendMessage('bot', answer);
+
+  } catch (err) {
+    removeTyping();
+    const bubble = appendMessage('bot', `⚠️ Error: ${err.message}\n\nPlease check your API key and try again.`);
+    bubble.classList.add('error-bubble');
+  } finally {
+    document.getElementById('sendBtn').disabled = false;
+    isLoading = false;
+    input.focus();
+  }
+}
+
+// ─── Init ────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadManualData();
+  document.getElementById('userInput').focus();
+});
+</script>
+</body>
+</html>
