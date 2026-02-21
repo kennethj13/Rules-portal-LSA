@@ -242,11 +242,8 @@ function formatText(t) {
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
     .replace(/(Section\s+[\d.]+[a-z]?)/gi,'<span class="section-ref">$1</span>')
-    .replace(/
-
-/g,'</p><p>')
-    .replace(/
-/g,'<br>')
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/\n/g,'<br>')
     .replace(/^/,'<p>').replace(/$/,'</p>');
 }
 
