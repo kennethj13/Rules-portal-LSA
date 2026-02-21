@@ -167,7 +167,7 @@
   <div class="input-area">
     <div class="input-wrapper">
       <textarea id="userInput" placeholder="Ask about any rule, event, or regulation…" rows="1"
-        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}" oninput="autoResize(this)"></textarea>
       <button class="send-btn" id="sendBtn" onclick="sendMessage()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -211,7 +211,6 @@ function findChunks(query, n=5) {
 let history = [], loading = false;
 
 function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
-function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} }
 function askChip(el) { document.getElementById('userInput').value=el.textContent; sendMessage(); }
 
 function hideWelcome() {
@@ -292,8 +291,9 @@ Rules:
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,system,messages:recent})
     });
-    if(!res.ok){const e=await res.json(); throw new Error(e.error?.message||'API error '+res.status);}
     const data=await res.json();
+    console.log('API response status:', res.status, data);
+    if(!res.ok){ throw new Error(data.error?.message||'API error '+res.status); }
     const answer=data.content?.[0]?.text||'Sorry, no response generated.';
     history.push({role:'assistant',content:answer});
     removeTyping(); appendMessage('bot',answer);
