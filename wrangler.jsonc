@@ -1,9 +1,9 @@
 {
   "name": "rules-portal-lsa",
   "compatibility_date": "2026-02-21",
+  "main": "worker.js",
   "assets": {
     "directory": "./",
-    "html_handling": "auto-trailing-slash",
-    "not_found_handling": "single-page-application"
+    "binding": "ASSETS"
   }
 }

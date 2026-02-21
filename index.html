@@ -128,24 +128,7 @@
   .send-btn:disabled { background: rgba(255,255,255,0.1); cursor: not-allowed; }
   .footer-note { text-align: center; font-size: 11px; color: var(--muted); margin-top: 10px; }
   .error-bubble { background: rgba(232,69,60,0.1) !important; border-color: rgba(232,69,60,0.3) !important; color: #ff9a96 !important; }
-  .api-key-banner {
-    margin: 12px 24px 0;
-    background: rgba(244,162,41,0.1); border: 1px solid rgba(244,162,41,0.3);
-    border-radius: 12px; padding: 10px 16px;
-    display: flex; align-items: center; gap: 10px; flex-shrink: 0;
-  }
-  .api-key-banner input {
-    flex: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px; padding: 6px 12px; color: white;
-    font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none;
-  }
-  .api-key-banner input::placeholder { color: var(--muted); }
-  .api-key-banner button {
-    background: var(--sun); border: none; border-radius: 8px;
-    padding: 6px 14px; color: var(--ocean); font-weight: 600;
-    font-size: 13px; cursor: pointer; white-space: nowrap;
-  }
-  .api-key-banner label { font-size: 12px; color: var(--sun); white-space: nowrap; }
+
 </style>
 </head>
 <body>
@@ -158,12 +141,6 @@
     </div>
     <div class="edition-badge">17th Edition · Nov 2022</div>
   </header>
-
-  <div class="api-key-banner" id="apiBanner">
-    <label>🔑 API Key:</label>
-    <input type="password" id="apiKeyInput" placeholder="Enter your Anthropic API key..." />
-    <button onclick="saveKey()">Save</button>
-  </div>
 
   <div class="suggestions">
     <div class="suggestions-label">Quick Questions</div>
@@ -209,23 +186,8 @@ const CHUNKS = _D.c;
 const INDEX  = _D.i;
 console.log('LSA Manual loaded:', CHUNKS.length, 'chunks');
 
-// ── API Key management ────────────────────────────────────────────────────
-let API_KEY = localStorage.getItem('lsa_api_key') || '';
-function saveKey() {
-  API_KEY = document.getElementById('apiKeyInput').value.trim();
-  if (API_KEY) {
-    localStorage.setItem('lsa_api_key', API_KEY);
-    document.getElementById('apiBanner').style.display = 'none';
-    appendMessage('bot', '✅ API key saved! You can now ask questions about the LSA Competition Manual.');
-  }
-}
 window.addEventListener('DOMContentLoaded', () => {
-  if (API_KEY) {
-    document.getElementById('apiBanner').style.display = 'none';
-  } else {
-    document.getElementById('apiKeyInput').focus();
-  }
-  if (API_KEY) document.getElementById('userInput').focus();
+  document.getElementById('userInput').focus();
 });
 
 // ── Keyword search ────────────────────────────────────────────────────────
@@ -300,7 +262,6 @@ function removeTyping() { const el=document.getElementById('typing'); if(el)el.r
 
 async function sendMessage() {
   if(loading) return;
-  if(!API_KEY) { document.getElementById('apiBanner').style.display='flex'; document.getElementById('apiKeyInput').focus(); return; }
   const input = document.getElementById('userInput');
   const query = input.value.trim();
   if(!query) return;
@@ -326,9 +287,9 @@ Rules:
   const recent = history.slice(-6);
   showTyping();
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/chat', {
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,system,messages:recent})
     });
     if(!res.ok){const e=await res.json(); throw new Error(e.error?.message||'API error '+res.status);}
