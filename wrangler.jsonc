@@ -1,7 +1,8 @@
 {
   "name": "rules-portal-lsa",
-  "compatibility_date": "2026-02-20",
+  "compatibility_date": "2026-02-21",
   "assets": {
-    "directory": "./"
+    "directory": "./",
+    "not_found_handling": "single-page-application"
   }
 }
