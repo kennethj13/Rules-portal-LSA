@@ -1,0 +1,10 @@
+# Downloaded source PDFs and extracted text — data is embedded in index.html
+manuals/
+
+# Node / Wrangler
+node_modules/
+.wrangler/
+dist/
+
+# OS
+.DS_Store
