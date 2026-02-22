@@ -40,6 +40,14 @@ export default {
       await env.RATE_LIMIT_KV.put(rateLimitKey, String(count + 1), { expirationTtl: 86400 });
     }
 
+    // Guard: API key must be configured as a Cloudflare secret
+    if (!env.ANTHROPIC_API_KEY) {
+      return new Response(
+        JSON.stringify({ error: { message: 'ANTHROPIC_API_KEY secret is not set in Cloudflare. Add it via: wrangler secret put ANTHROPIC_API_KEY' } }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Forward to Anthropic
     try {
       const body = await request.json();
