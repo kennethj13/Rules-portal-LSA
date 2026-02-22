@@ -289,7 +289,7 @@ Rules:
     const res = await fetch('/api/chat', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,system,messages:recent})
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:800,system,messages:recent})
     });
     const data=await res.json();
     console.log('API response status:', res.status, data);
