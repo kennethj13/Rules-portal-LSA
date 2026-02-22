@@ -4,17 +4,9 @@
   "main": "worker.js",
   "assets": {
     "directory": "./",
-    "binding": "ASSETS",
-    "exclude": ["worker.js", "wrangler.jsonc", "manual_data.js", "manuals/", ".gitignore"]
-  },
-  // KV namespace for per-IP daily rate limiting.
-  // Before first deploy, create the namespace:
-  //   wrangler kv namespace create RATE_LIMIT_KV
-  // Then paste the returned id below.
-  "kv_namespaces": [
-    {
-      "binding": "RATE_LIMIT_KV",
-      "id": "PASTE_KV_NAMESPACE_ID_HERE"
-    }
-  ]
+    "binding": "ASSETS"
+  }
+  // To enable per-IP rate limiting, create a KV namespace and add:
+  // "kv_namespaces": [{ "binding": "RATE_LIMIT_KV", "id": "<your-namespace-id>" }]
+  // Run: wrangler kv namespace create RATE_LIMIT_KV
 }

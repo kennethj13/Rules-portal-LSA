@@ -1,0 +1,18 @@
+# Worker source and config — not static assets
+worker.js
+wrangler.jsonc
+manual_data.js
+
+# Source data
+manuals/
+
+# Build and tooling artifacts
+.git/
+.wrangler/
+node_modules/
+dist/
+
+# Dotfiles
+.gitignore
+.wranglerignore
+.DS_Store
