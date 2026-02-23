@@ -1,0 +1,21 @@
+# Exclude version control internals
+.git/
+.gitignore
+
+# Exclude Wrangler build artifacts and local state
+.wrangler/
+
+# Exclude Node.js dependencies
+node_modules/
+
+# Exclude OS metadata
+.DS_Store
+Thumbs.db
+
+# Exclude source PDF/text files (data is embedded in index.html)
+manuals/
+
+# Exclude this file itself and other config-only files
+.assetsignore
+wrangler.jsonc
+worker.js
