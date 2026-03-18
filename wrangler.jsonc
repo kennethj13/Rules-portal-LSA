@@ -5,5 +5,9 @@
   "assets": {
     "directory": "./",
     "binding": "ASSETS"
-  }
+  },
+  "routes": [
+    { "pattern": "rescuesports.co.za/*", "zone_name": "rescuesports.co.za" },
+    { "pattern": "www.rescuesports.co.za/*", "zone_name": "rescuesports.co.za" }
+  ]
 }
