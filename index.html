@@ -309,6 +309,11 @@ function hideWelcome() {
   if(w) { w.style.opacity='0'; setTimeout(()=>w.remove(),300); }
 }
 
+function scrollToBottom() {
+  const area = document.getElementById('chatArea');
+  requestAnimationFrame(() => requestAnimationFrame(() => { area.scrollTop = area.scrollHeight; }));
+}
+
 function appendMessage(role, text) {
   hideWelcome();
   const area = document.getElementById('chatArea');
@@ -322,7 +327,7 @@ function appendMessage(role, text) {
   bub.innerHTML = role==='bot' ? formatText(text) : escHtml(text);
   div.appendChild(av); div.appendChild(bub);
   area.appendChild(div);
-  requestAnimationFrame(() => { area.scrollTop = area.scrollHeight; });
+  scrollToBottom();
   return bub;
 }
 
@@ -343,7 +348,7 @@ function showTyping() {
   const div = document.createElement('div');
   div.id='typing'; div.className='message bot';
   div.innerHTML='<div class="avatar bot">🏖</div><div class="bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
-  area.appendChild(div); requestAnimationFrame(() => { area.scrollTop=area.scrollHeight; });
+  area.appendChild(div); scrollToBottom();
 }
 function removeTyping() { const el=document.getElementById('typing'); if(el)el.remove(); }
 
