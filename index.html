@@ -564,8 +564,12 @@ async function sendMessage() {
   loading=true;
   appendMessage('user', query);
   const org = ORGS[selectedOrg];
-  const ctx = findChunks(query,5,selectedOrg).join('\n\n---\n\n') || 'No specific section found.';
+  // Normalise informal terms before keyword search: "mali"/"malibu" → "board"
+  const searchQuery = query.replace(/\bmali\b|\bmalibu\b/gi, 'board');
+  const ctx = findChunks(searchQuery,5,selectedOrg).join('\n\n---\n\n') || 'No specific section found.';
   const system = `You are an expert assistant for the ${org.fullName} Competition Manual (${org.manual}).
+
+TERMINOLOGY NOTE: Competitors and coaches often use informal terms. "Mali" and "Malibu" (or "Malibu board") are common informal names for the surfboard used in board events. When someone asks about a "mali" or "malibu", treat it as equivalent to "board" as used in the competition rules.
 
 RELEVANT MANUAL SECTIONS:
 ${ctx}
